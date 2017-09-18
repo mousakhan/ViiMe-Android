@@ -180,8 +180,6 @@ public class LoginActivity extends AppCompatActivity {
         email.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-
-
                 if (!hasFocus && !password.hasFocus()) {
                     Log.d(TAG, "ID is "+v.getId());
                     Log.d(TAG, "Password "+ R.id.password);
@@ -193,9 +191,7 @@ public class LoginActivity extends AppCompatActivity {
         password.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-
                 if (!hasFocus) {
-                    Log.d(TAG, "Hiding in 2");
                     hideKeyboard(v);
                 }
             }
@@ -210,6 +206,17 @@ public class LoginActivity extends AppCompatActivity {
                 LoginActivity.this.startActivity(myIntent);
             }
         });
+
+        Button signUpButton = (Button) findViewById(R.id.signUp);
+
+
+        signUpButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent myIntent = new Intent(LoginActivity.this, SignUpActivity.class);
+                LoginActivity.this.startActivity(myIntent);
+            }
+        });
+
 
 
 

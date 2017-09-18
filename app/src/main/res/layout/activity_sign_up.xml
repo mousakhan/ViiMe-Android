@@ -4,6 +4,155 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="vl.viime.SignUpActivity">
+    android:id="@+id/layout"
+    tools:context="vl.viime.SignUpActivity"
+    android:background="@drawable/nightlife"
+    android:clickable="true"
+    android:focusableInTouchMode="true">
+
+
+    <ImageView
+        android:id="@+id/logo"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_width="250dp"
+        android:layout_height="150dp"
+        android:src="@drawable/viime"
+        android:layout_marginTop="25dp" />
+    <EditText
+        android:id="@+id/username"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:background="#FFF"
+        android:layout_marginTop="25dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:padding="10dp"
+        android:hint="Username"
+        app:layout_constraintTop_toBottomOf="@+id/logo"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:drawableLeft="@drawable/user"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:drawableTint="#444A59"
+        android:drawablePadding="10dp"
+        android:inputType="text"
+        android:maxLines="1"
+        android:imeOptions="actionNext"
+        android:textCursorDrawable="@null"/>
+
+    <EditText
+        android:id="@+id/name"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:background="#FFF"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginTop="20dp"
+        android:hint="Name"
+        app:layout_constraintTop_toBottomOf="@+id/username"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:drawableLeft="@drawable/password"
+        android:padding="10dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:drawableTint="#444A59"
+        android:inputType="text"
+        android:drawablePadding="10dp"
+        android:maxLines="1"
+        android:textCursorDrawable="@null"/>
+
+    <EditText
+        android:id="@+id/email"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:background="#FFF"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginTop="20dp"
+        android:hint="Email"
+        app:layout_constraintTop_toBottomOf="@+id/name"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:drawableLeft="@drawable/password"
+        android:padding="10dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:drawableTint="#444A59"
+        android:inputType="text"
+        android:drawablePadding="10dp"
+        android:maxLines="1"
+        android:textCursorDrawable="@null"/>
+    <EditText
+        android:id="@+id/password"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:background="#FFF"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginTop="20dp"
+        android:hint="Password"
+        app:layout_constraintTop_toBottomOf="@+id/email"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:drawableLeft="@drawable/password"
+        android:padding="10dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:drawableTint="#444A59"
+        android:inputType="text"
+        android:drawablePadding="10dp"
+        android:maxLines="1"
+        android:textCursorDrawable="@null"/>
+
+    <EditText
+        android:id="@+id/confirmpassword"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:background="#FFF"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginTop="20dp"
+        android:hint="Confim Password"
+        app:layout_constraintTop_toBottomOf="@+id/password"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:drawableLeft="@drawable/password"
+        android:padding="10dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:drawableTint="#444A59"
+        android:inputType="text"
+        android:drawablePadding="10dp"
+        android:maxLines="1"
+        android:textCursorDrawable="@null"/>
+
+
+
+    <Button
+        android:id="@+id/signUpButton"
+        android:layout_width="0dp"
+        android:background="#3F2682"
+        android:textColor="#FFF"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/confirmpassword"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:text="SIGN UP"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp" />
+
+
+
+
+
+
+
 
 </android.support.constraint.ConstraintLayout>
