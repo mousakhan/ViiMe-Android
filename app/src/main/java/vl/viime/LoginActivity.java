@@ -13,6 +13,9 @@ import android.os.Bundle;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
@@ -96,7 +99,7 @@ public class LoginActivity extends AppCompatActivity {
                             alert.show();
                             return;
                         } else {
-                            // Login successful
+                            // Login succesful
                             Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
                             LoginActivity.this.startActivity(myIntent);
                             LoginActivity.this.finish();
@@ -109,12 +112,39 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_friends:
+                // User chose the "Settings" item, show the app settings UI...
+                return true;
+
+            case R.id.action_profile:
+                Intent myIntent = new Intent(LoginActivity.this, ProfileActivity.class);
+                LoginActivity.this.startActivity(myIntent);
+
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_login);
-
-        getSupportActionBar().hide();
+        
 
         mAuth = FirebaseAuth.getInstance();
 
