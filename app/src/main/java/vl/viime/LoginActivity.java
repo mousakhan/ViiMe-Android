@@ -95,6 +95,11 @@ public class LoginActivity extends AppCompatActivity {
                             AlertDialog alert = builder.create();
                             alert.show();
                             return;
+                        } else {
+                            // Login successful
+                            Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
+                            LoginActivity.this.startActivity(myIntent);
+                            LoginActivity.this.finish();
                         }
 
 
@@ -108,6 +113,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_login);
+
+        getSupportActionBar().hide();
 
         mAuth = FirebaseAuth.getInstance();
 

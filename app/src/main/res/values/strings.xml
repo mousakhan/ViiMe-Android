@@ -2,4 +2,5 @@
     <string name="app_name">ViiMe</string>
     <string name="facebook_app_id">518696345007422</string>
     <string name="fb_login_protocol_scheme">fb518696345007422</string>
+    <string name="auth_failed">Sign up has failed. Please try again. </string>
 </resources>

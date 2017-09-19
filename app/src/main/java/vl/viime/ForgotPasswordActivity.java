@@ -27,6 +27,8 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forgot_password);
 
+        getSupportActionBar().hide();
+
         final EditText email = (EditText) findViewById(R.id.email);
         // Change size of email button
         email.getViewTreeObserver()

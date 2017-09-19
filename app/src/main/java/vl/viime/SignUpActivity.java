@@ -2,39 +2,158 @@ package vl.viime;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.zxing.common.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SignUpActivity extends AppCompatActivity {
+    private static final String TAG = "SignUpActivity";
+    private FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
+    private DatabaseReference mReference = mDatabase.getReference();
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
+        getSupportActionBar().hide();
+        
         final EditText email = (EditText) findViewById(R.id.email);
         final EditText password = (EditText) findViewById(R.id.password);
+        password.setTransformationMethod(new PasswordTransformationMethod());
         final EditText name = (EditText) findViewById(R.id.name);
         final EditText confirmPassword = (EditText) findViewById(R.id.confirmpassword);
+        confirmPassword.setTransformationMethod(new PasswordTransformationMethod());
         final EditText username = (EditText) findViewById(R.id.username);
         final Button signUpButton = (Button) findViewById(R.id.signUpButton);
+
+
+        name.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus && !email.hasFocus() && !confirmPassword.hasFocus() && !username.hasFocus() && !password.hasFocus()) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+
+
+        username.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus && !email.hasFocus() && !confirmPassword.hasFocus() && !name.hasFocus() && !password.hasFocus()) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+
+        confirmPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus && !email.hasFocus() && !name.hasFocus() && !username.hasFocus() && !password.hasFocus()) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+
+
+        email.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus && !password.hasFocus() && !confirmPassword.hasFocus() && !username.hasFocus() && !name.hasFocus()) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+
+        password.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus && !email.hasFocus() && !confirmPassword.hasFocus() && !username.hasFocus() && !name.hasFocus()) {
+                    hideKeyboard(v);
+                }
+            }
+        });
+
+        confirmPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                    mAuth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString())
+                            .addOnCompleteListener(SignUpActivity.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        // Sign in success, update UI with the signed-in user's information
+
+                                        // Add user to users node
+                                        Map<String, String> data = new HashMap<String, String>();
+                                        data.put("username", username.getText().toString());
+                                        data.put("name", name.getText().toString());
+                                        data.put("email", email.getText().toString());
+                                        data.put("age", "");
+                                        data.put("profile", "");
+                                        String key = mReference.child("users").push().getKey();
+                                        data.put("id", key);
+                                        mReference.child("users").child(key).setValue(data);
+
+                                        Toast.makeText(SignUpActivity.this, "Sign up successful. Email verification sent.",
+                                                Toast.LENGTH_SHORT).show();
+                                        startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
+                                        Log.d(TAG, "createUserWithEmail:success");
+                                        return;
+                                    } else {
+                                        // If sign in fails, display a message to the user.
+                                        Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                                        Toast.makeText(SignUpActivity.this, "Sign up failed. " + task.getException().getMessage(),
+                                                Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+                                }
+                            });
+
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        });
+
 
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,32 +196,68 @@ public class SignUpActivity extends AppCompatActivity {
                     return;
                 }
 
+                if (!password.getText().toString().equals(confirmPassword.getText().toString())) {
+                    Toast.makeText(SignUpActivity.this, "Please ensure the passwords are the same",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
 
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                final DatabaseReference reference = database.getReference();
+                if (!isUsernameValid(username.getText())) {
+                    Toast.makeText(SignUpActivity.this, "The username cannot start or end with -, _, . or a number, can contain no white spaces, emojis, or special characters, must be 3-15 characters long and all in lowercase.",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-                Query query = reference.child("users").orderByChild("username").equalTo(username.getText().toString());
-                query.addValueEventListener(new ValueEventListener() {
+
+                Query query = mReference.child("users").orderByChild("username").equalTo(username.getText().toString());
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (!dataSnapshot.exists()) {
+                        if (dataSnapshot.exists()) {
                             Toast.makeText(SignUpActivity.this, "The username is already taken",
                                     Toast.LENGTH_SHORT).show();
                             return;
                         } else {
-                            Map<String, String> data= new HashMap<String, String>();
-                            data.put("username", username.getText().toString());
-                            data.put("name", name.getText().toString());
-                            data.put("email", email.getText().toString());
+                            FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
-                            String key = reference.child("users").getKey();
-                            data.put("id", key);
-                            reference.child("users").child(key).setValue(data);
+                            mAuth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString())
+                                    .addOnCompleteListener(SignUpActivity.this, new OnCompleteListener<AuthResult>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<AuthResult> task) {
+                                            if (task.isSuccessful()) {
+                                                // Sign in success, update UI with the signed-in user's information
+
+                                                // Add user to users node
+                                                Map<String, String> data = new HashMap<String, String>();
+                                                data.put("username", username.getText().toString());
+                                                data.put("name", name.getText().toString());
+                                                data.put("email", email.getText().toString());
+                                                data.put("age", "");
+                                                data.put("profile", "");
+                                                String key = mReference.child("users").push().getKey();
+                                                data.put("id", key);
+                                                mReference.child("users").child(key).setValue(data);
+
+                                                Toast.makeText(SignUpActivity.this, "Sign up successful. Email verification sent.",
+                                                        Toast.LENGTH_SHORT).show();
+                                                startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
+                                                Log.d(TAG, "createUserWithEmail:success");
+                                                return;
+                                            } else {
+                                                // If sign in fails, display a message to the user.
+                                                Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                                                Toast.makeText(SignUpActivity.this, "Sign up failed. " + task.getException().getMessage(),
+                                                        Toast.LENGTH_SHORT).show();
+                                                return;
+                                            }
+                                        }
+                                    });
+
 
                             return;
                         }
-                    }
+                    };
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
@@ -201,34 +356,59 @@ public class SignUpActivity extends AppCompatActivity {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
-    private boolean isUsernameValid(CharSequence email) {
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    private boolean isUsernameValid(CharSequence username) {
+
+
+        if (username.toString().length() < 3 ||  username.toString().length() > 15) {
+            return false;
+        }
+
+        if (!username.toString().toLowerCase().equals(username.toString())) {
+            Log.d(TAG, "Not all lowercase");
+            return false;
+        }
+
+        String firstChar = username.toString().substring(0, 1);
+        String lastChar = username.toString().substring(username.toString().length() - 1);
+
+
+        Log.d(TAG, firstChar);
+        Log.d(TAG, lastChar);
+
+        // Check for whitespace in string
+        if (containsWhiteSpace(username.toString())) {
+            Log.d(TAG, "Whitespace");
+            return false;
+        }
+
+
+        if (lastChar.equals(".") || lastChar.equals("_") || lastChar.equals("-") || firstChar.equals(".") || firstChar.equals("_") || firstChar.equals("-")) {
+            Log.d(TAG, "Illegal chracter requirement");
+            return false;
+        }
+
+        if (!username.toString().matches("^[a-zA-Z0-9_.-]+$")) {
+            Log.d(TAG, "REGEX requirement");
+            return false;
+        }
+
+        return true;
     }
 
-    private boolean isUsernameUnique(CharSequence username) {
-        // Write a message to the database
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference reference = database.getReference();
-        boolean isUsernameUnique = true;
-
-
-        Query query = reference.child("users").orderByChild("username").equalTo(username.toString());
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    Toast.makeText(SignUpActivity.this, "The username is already taken",
-                            Toast.LENGTH_SHORT).show();
-                    return;
+    private static boolean containsWhiteSpace(final String testCode){
+        if(testCode != null){
+            for(int i = 0; i < testCode.length(); i++){
+                if(Character.isWhitespace(testCode.charAt(i))){
+                    return true;
                 }
             }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
+        }
         return false;
+    }
+
+
+    public void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(LoginActivity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }
