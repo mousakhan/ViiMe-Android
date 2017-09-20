@@ -20,13 +20,13 @@ public class HomeActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_friends:
-                // User chose the "Settings" item, show the app settings UI...
+                // Clicking into friends list
                 return true;
 
             case R.id.action_profile:
+                // Clicking profile page
                 Intent myIntent = new Intent(HomeActivity.this, ProfileActivity.class);
                 HomeActivity.this.startActivity(myIntent);
-
                 return true;
 
             default:

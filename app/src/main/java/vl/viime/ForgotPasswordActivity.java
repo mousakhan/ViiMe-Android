@@ -20,17 +20,19 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
 
-    private static final String TAG = "ForgotActivity";
+    private static final String TAG = "ForgotPasswordActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forgot_password);
 
+        // Hide the action bar
         getSupportActionBar().hide();
 
         final EditText email = (EditText) findViewById(R.id.email);
-        // Change size of email button
+
+        // Change size of email icon
         email.getViewTreeObserver()
                 .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
@@ -46,6 +48,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                     }
                 });
 
+        // If there are any clicks outside the email textfield, hide the keyboard
         email.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -55,27 +58,36 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             }
         });
 
+
         final Button resetPassword = (Button) findViewById(R.id.signInButton);
+
+        //  Onclick event for reset password
         resetPassword.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 String e = email.getText().toString();
+
+                // Make sure the text isn't empty
                 if (e.equals("")) {
-                    Toast.makeText(ForgotPasswordActivity.this, "Please enter an email",
+                    Toast.makeText(ForgotPasswordActivity.this, R.string.enter_email,
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
 
 
+                // Send the password reset email
                 FirebaseAuth.getInstance().sendPasswordResetEmail(e)
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
+
+                                // If it's not successful, show the error
                                 if (!task.isSuccessful()) {
                                     Toast.makeText(ForgotPasswordActivity.this, task.getException().getLocalizedMessage(),
                                             Toast.LENGTH_SHORT).show();
                                     return;
                                 }
 
+                                // Otherwise, show toast saying it was successful.
                                 Toast.makeText(ForgotPasswordActivity.this, "Reset Email Sent",
                                         Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(ForgotPasswordActivity.this, LoginActivity.class));

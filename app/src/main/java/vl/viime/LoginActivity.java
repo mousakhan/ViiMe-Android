@@ -41,80 +41,6 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private Button signInButton;
 
-    private void signin(String email, String password) {
-        if (email.equals("")) {
-            Toast.makeText(LoginActivity.this, R.string.enter_email,
-                    Toast.LENGTH_SHORT).show();
-            signInButton.setText(R.string.sign_in);
-            enableUI();
-            return;
-        }
-
-        if (password.equals("")) {
-            Toast.makeText(LoginActivity.this, R.string.enter_password,
-                    Toast.LENGTH_SHORT).show();
-            signInButton.setText(R.string.sign_in);
-            enableUI();
-            return;
-        }
-
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
-
-                        // If sign in fails, display a message to the user. If sign in succeeds
-                        // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
-                        if (!task.isSuccessful()) {
-                            Log.d(TAG, "signInWithEmail:failed", task.getException());
-                            Toast.makeText(LoginActivity.this, task.getException().getLocalizedMessage(),
-                                    Toast.LENGTH_SHORT).show();
-                            enableUI();
-                            return;
-                        }
-
-                        final FirebaseUser user = mAuth.getCurrentUser();
-                        signInButton.setText(R.string.sign_in);
-                        enableUI();
-
-                        // If email is not verified, then ask to re-send verification email
-                        // also, sign out the user.
-                        if (user != null && !user.isEmailVerified()) {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
-                            builder.setMessage(R.string.email_verification)
-                                    .setNegativeButton(R.string.maybe_later, new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            mAuth.signOut();
-                                        };
-                                    })
-                                    .setPositiveButton(R.string.resend, new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            user.sendEmailVerification();
-                                            mAuth.signOut();
-                                        }
-                                    });
-
-
-                            AlertDialog alert = builder.create();
-                            alert.show();
-                            enableUI();
-                            return;
-                        } else {
-                            // Login succesful
-                            Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
-                            LoginActivity.this.startActivity(myIntent);
-                            LoginActivity.this.finish();
-                            enableUI();
-                        }
-
-
-
-                    }
-                });
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         MenuInflater inflater = getMenuInflater();
@@ -149,10 +75,7 @@ public class LoginActivity extends AppCompatActivity {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_login);
 
-
         mAuth = FirebaseAuth.getInstance();
-
-
         if (mAuth.getCurrentUser() != null) {
             Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
             LoginActivity.this.startActivity(myIntent);
@@ -283,11 +206,86 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void enableUI() {
+        signInButton.setText(R.string.sign_in);
         ConstraintLayout layout = (ConstraintLayout) findViewById(R.id.layout);
         for (int i = 0; i < layout.getChildCount(); i++) {
             View child = layout.getChildAt(i);
             child.setEnabled(true);
         }
     }
+
+
+    // This function will sign in the user to Firebase
+    private void signin(String email, String password) {
+
+        // If email textfield is empty, ask them to enter one and enable the UI
+        if (email.equals("")) {
+            Toast.makeText(LoginActivity.this, R.string.enter_email,
+                    Toast.LENGTH_SHORT).show();
+            enableUI();
+            return;
+        }
+        // If password textfield is empty, ask them to enter one and enable the UI
+        if (password.equals("")) {
+            Toast.makeText(LoginActivity.this, R.string.enter_password,
+                    Toast.LENGTH_SHORT).show();
+            enableUI();
+            return;
+        }
+
+
+        // Sign in using Firebase
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+
+                        // If sign in fails, display a message to the user.
+                        if (!task.isSuccessful()) {
+                            Log.d(TAG, "signInWithEmail:failed", task.getException());
+                            Toast.makeText(LoginActivity.this, task.getException().getLocalizedMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                            enableUI();
+                            return;
+                        }
+
+
+                        final FirebaseUser user = mAuth.getCurrentUser();
+
+                        // If email is not verified, then ask to re-send verification email
+                        // also, sign out the user.
+                        if (user != null && !user.isEmailVerified()) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+                            builder.setMessage(R.string.email_verification)
+                                    .setNegativeButton(R.string.maybe_later, new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            mAuth.signOut();
+                                        };
+                                    })
+                                    .setPositiveButton(R.string.resend, new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            user.sendEmailVerification();
+                                            mAuth.signOut();
+                                        }
+                                    });
+
+
+                            AlertDialog alert = builder.create();
+                            alert.show();
+                            enableUI();
+                            return;
+                        } else {
+                            // Login successful, move onto the home page
+                            Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
+                            LoginActivity.this.startActivity(myIntent);
+                            LoginActivity.this.finish();
+                        }
+
+                        enableUI();
+
+                    }
+                });
+    }
+
 
 }
