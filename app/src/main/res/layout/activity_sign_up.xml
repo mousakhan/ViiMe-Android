@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fillViewport="true">
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -130,8 +135,6 @@
         android:maxLines="1"
         android:textCursorDrawable="@null"/>
 
-
-
     <Button
         android:id="@+id/signUpButton"
         android:layout_width="0dp"
@@ -144,15 +147,9 @@
         app:layout_constraintTop_toBottomOf="@+id/confirmpassword"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:text="SIGN UP"
+        android:text="@string/sign_up"
         android:layout_marginStart="50dp"
         android:layout_marginEnd="50dp" />
 
-
-
-
-
-
-
-
 </android.support.constraint.ConstraintLayout>
+</ScrollView>

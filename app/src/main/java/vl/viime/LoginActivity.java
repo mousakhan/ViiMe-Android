@@ -43,17 +43,17 @@ public class LoginActivity extends AppCompatActivity {
 
     private void signin(String email, String password) {
         if (email.equals("")) {
-            Toast.makeText(LoginActivity.this, "Please enter an email",
+            Toast.makeText(LoginActivity.this, R.string.enter_email,
                     Toast.LENGTH_SHORT).show();
-            signInButton.setText("SIGN IN");
+            signInButton.setText(R.string.sign_in);
             enableUI();
             return;
         }
 
         if (password.equals("")) {
-            Toast.makeText(LoginActivity.this, "Please enter a password",
+            Toast.makeText(LoginActivity.this, R.string.enter_password,
                     Toast.LENGTH_SHORT).show();
-            signInButton.setText("SIGN IN");
+            signInButton.setText(R.string.sign_in);
             enableUI();
             return;
         }
@@ -71,23 +71,25 @@ public class LoginActivity extends AppCompatActivity {
                             Log.d(TAG, "signInWithEmail:failed", task.getException());
                             Toast.makeText(LoginActivity.this, task.getException().getLocalizedMessage(),
                                     Toast.LENGTH_SHORT).show();
+                            enableUI();
+                            return;
                         }
 
                         final FirebaseUser user = mAuth.getCurrentUser();
-                        signInButton.setText("SIGN IN");
+                        signInButton.setText(R.string.sign_in);
                         enableUI();
 
                         // If email is not verified, then ask to re-send verification email
                         // also, sign out the user.
-                        if (!user.isEmailVerified()) {
+                        if (user != null && !user.isEmailVerified()) {
                             AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
-                            builder.setMessage("It looks like you have not yet verified your email. Would you like us to re-send a verification email?")
-                                    .setNegativeButton("Maybe later", new DialogInterface.OnClickListener() {
+                            builder.setMessage(R.string.email_verification)
+                                    .setNegativeButton(R.string.maybe_later, new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
                                             mAuth.signOut();
                                         };
                                     })
-                                    .setPositiveButton("Resend", new DialogInterface.OnClickListener() {
+                                    .setPositiveButton(R.string.resend, new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
                                             user.sendEmailVerification();
                                             mAuth.signOut();
@@ -97,12 +99,14 @@ public class LoginActivity extends AppCompatActivity {
 
                             AlertDialog alert = builder.create();
                             alert.show();
+                            enableUI();
                             return;
                         } else {
                             // Login succesful
                             Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
                             LoginActivity.this.startActivity(myIntent);
                             LoginActivity.this.finish();
+                            enableUI();
                         }
 
 
@@ -144,9 +148,17 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_login);
-        
+
 
         mAuth = FirebaseAuth.getInstance();
+
+
+        if (mAuth.getCurrentUser() != null) {
+            Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
+            LoginActivity.this.startActivity(myIntent);
+            LoginActivity.this.finish();
+            return;
+        }
 
         signInButton = (Button) findViewById(R.id.signInButton);
         final EditText email = (EditText) findViewById(R.id.email);
@@ -156,7 +168,7 @@ public class LoginActivity extends AppCompatActivity {
 
         signInButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                signInButton.setText("Signing in");
+                signInButton.setText(R.string.sign_in_loading);
                 disableUI();
                 signin(email.getText().toString(), password.getText().toString());
             }
@@ -201,7 +213,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    signInButton.setText("Signing in");
+                    signInButton.setText(R.string.sign_in_loading);
                     disableUI();
                     signin(email.getText().toString(), password.getText().toString());
                     return true;
@@ -218,8 +230,6 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus && !password.hasFocus()) {
-                    Log.d(TAG, "ID is "+v.getId());
-                    Log.d(TAG, "Password "+ R.id.password);
                     hideKeyboard(v);
                 }
             }
