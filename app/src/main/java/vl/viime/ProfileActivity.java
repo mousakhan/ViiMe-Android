@@ -1,21 +1,34 @@
 package vl.viime;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
+
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.view.ActionMode;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,9 +41,14 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.vansuita.pickimage.bean.PickResult;
 import com.vansuita.pickimage.bundle.PickSetup;
 import com.vansuita.pickimage.dialog.PickImageDialog;
+import com.vansuita.pickimage.listeners.IPickResult;
+
 import java.io.ByteArrayOutputStream;
+import java.lang.reflect.Array;
+
 
 
 public class ProfileActivity extends AppCompatActivity {
@@ -43,6 +61,7 @@ public class ProfileActivity extends AppCompatActivity {
     private String mAge;
     private ImageView mProfileImageView;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,15 +71,52 @@ public class ProfileActivity extends AppCompatActivity {
         final EditText mNameEditText = (EditText) findViewById(R.id.name);
         final EditText mEmailEditText = (EditText) findViewById(R.id.email);
         final EditText mAgeEditText = (EditText) findViewById(R.id.birthday);
+        final ListView mListView = (ListView) findViewById(R.id.rewards_list);
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mProfileImageView = (ImageView) findViewById(R.id.profile_picture);
         mUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        DatabaseReference ref = mDatabase.child("users/" + mUser.getUid() + "/personal-deals");
+        // Attach a listener to read the data at the users node
+        ref.child("/personal-deals").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            // Getting the user information and setting it into the views
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot != null) {
+                    String[] list = {"T", "D"};
+                    ArrayAdapter adapter = new ArrayAdapter(ProfileActivity.this, android.R.layout.simple_list_item_2, android.R.id.text1, list) {
+                        @Override
+                        public View getView(int position, View convertView, ViewGroup parent) {
+                            View view = super.getView(position, convertView, parent);
+                            TextView text1 = (TextView) view.findViewById(android.R.id.text1);
+                            TextView text2 = (TextView) view.findViewById(android.R.id.text2);
+
+                            text1.setText("YA");
+                            text2.setText("T");
+                            return view;
+                        }
+                    };
+
+                    mListView.setAdapter((ListAdapter)adapter);
+
+                    mListView.setEmptyView(findViewById(R.id.empty));
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG, "Being cancelled");
+            }
+        });
+
 
         String userId = mUser.getUid().toString();
         Log.d(TAG, userId);
         // If user id exists, then get all the data from backend
         if (!userId.equals("") && userId != null) {
-            DatabaseReference ref = mDatabase.child("users/" + userId);
             Log.d(TAG, ref.toString());
             // Attach a listener to read the data at the users node
             ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -101,7 +157,30 @@ public class ProfileActivity extends AppCompatActivity {
         mProfileImageView.setOnClickListener(new View.OnClickListener() {
             //@Override
             public void onClick(View v) {
-                PickImageDialog.build(new PickSetup()).show(ProfileActivity.this);
+                PickImageDialog.build(new PickSetup())
+                        .setOnPickResult(new IPickResult() {
+                            @Override
+                            public void onPickResult(PickResult r) {
+                                if (r.getError() == null) {
+                                    //If you want the Uri.
+                                    //Mandatory to refresh image from Uri.
+                                    //getImageView().setImageURI(null);
+
+                                    //Setting the real returned image.
+                                    //getImageView().setImageURI(r.getUri());
+
+                                    //If you want the Bitmap.
+                                    mProfileImageView.setImageBitmap(r.getBitmap());
+                                    uploadFile();
+                                    //Image path
+                                    //r.getPath();
+                                } else {
+
+                                }
+                            }
+                        }).show(ProfileActivity.this);
+
+
             }
         });
 
@@ -166,17 +245,6 @@ public class ProfileActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // If the code is image capture, then set the profile image to it
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            mProfileImageView.setImageBitmap(imageBitmap);
-            uploadFile(imageBitmap);
-        }
-    }
-
 
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(LoginActivity.INPUT_METHOD_SERVICE);
@@ -184,37 +252,59 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     // This function will upload the file to FIrebase Storage
-    private void uploadFile(Bitmap bitmap) {
+    private void uploadFile() {
         FirebaseStorage storage = FirebaseStorage.getInstance();
-        // Getting the location of where to store the image on Firebase
-        StorageReference storageRef = storage.getReferenceFromUrl("profile/" + mUser.getUid());
 
-        // Setting up the image
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos);
-        byte[] data = baos.toByteArray();
+
+        // Create a reference to "mountains.jpg"
+        StorageReference storageRef = storage.getReference().child("profile/" + mUser.getUid());
 
         // Let the user know we're updating their profile
         Toast.makeText(ProfileActivity.this, R.string.profile_updated,
                 Toast.LENGTH_SHORT).show();
 
+        // Get the data from an ImageView as bytes
+        mProfileImageView.setDrawingCacheEnabled(true);
+        mProfileImageView.buildDrawingCache();
+        Bitmap bitmap = mProfileImageView.getDrawingCache();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        storageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                // File deleted successfully
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Uh-oh, an error occurred!
+            }
+        });
+
         UploadTask uploadTask = storageRef.putBytes(data);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                // If the upload fails, let them know
                 Toast.makeText(ProfileActivity.this, R.string.profile_update_fail,
                         Toast.LENGTH_SHORT).show();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // If it's successful, let them know it's done
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                @SuppressWarnings("VisibleForTests") Uri downloadUrl = taskSnapshot.getDownloadUrl();
+
+                String userId = mUser.getUid().toString();
                 Toast.makeText(ProfileActivity.this, R.string.profile_update_success,
                         Toast.LENGTH_SHORT).show();
+                DatabaseReference ref = mDatabase.child("users/" + userId + "/profile");
+                ref.setValue(downloadUrl.toString());
             }
         });
 
     }
+
 
 }

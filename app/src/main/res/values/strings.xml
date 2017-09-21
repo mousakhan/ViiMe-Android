@@ -20,11 +20,12 @@
     <string name="resend">Resend</string>
     <string name="reset_password">Reset Password</string>
     <string name="forgot_password">Forgot Password?</string>
-    <string name="vRewards_message">Get rewarded for your loyalty.\n\nDeals sent to you personally by venue owners will be found here!</string>
+    <string name="vRewards_message">Get rewarded for your loyalty. Deals sent to you personally by venue owners will be found here!</string>
     <string name="age_updated">Age Updated</string>
     <string name="email_updated">Email Updated</string>
     <string name="name_updated">Name Updated</string>
     <string name="profile_updated">Profile being updated. This may take a few seconds.</string>
     <string name="profile_update_fail">Profile failed to update. Please try again.</string>
     <string name="profile_update_success">Profile updated successfully.</string>
+    <string name="facebook_error">Failed to login with Facebook. Please try again.</string>
 </resources>
