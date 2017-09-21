@@ -10,6 +10,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -116,15 +117,35 @@ public class LoginActivity extends AppCompatActivity {
                                                         Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
                                                         LoginActivity.this.startActivity(myIntent);
                                                     } else {
-                                                        Log.d(TAG, "DOES NOT EXIST!!!");
+                                                        AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this);
+                                                        final EditText edittext = new EditText(LoginActivity.this);
+                                                        alert.setMessage("The username cannot start or end with -, _, . or a number, can contain no white spaces, emojis, or special characters, must be 3-15 characters long and all in lowercase.");
+                                                        alert.setTitle("Create a username");
+                                                        alert.setView(edittext);
+
+                                                        alert.setPositiveButton("Create", new DialogInterface.OnClickListener() {
+                                                            public void onClick(DialogInterface dialog, int whichButton) {
+                                                                //What ever you want to do with the value
+                                                                Editable YouEditTextValue = edittext.getText();
+
+                                                            }
+                                                        });
+
+                                                        alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                                            public void onClick(DialogInterface dialog, int whichButton) {
+                                                                // what ever you want to do with No option.
+                                                                LoginManager.getInstance().logOut();
+                                                                mAuth.signOut();
+                                                            }
+                                                        });
+
+                                                        alert.show();
                                                     }
 
                                                 }
 
                                                 @Override
                                                 public void onCancelled(DatabaseError databaseError)  {
-
-
                                                 }
                                             });
                                         } else {
@@ -133,28 +154,19 @@ public class LoginActivity extends AppCompatActivity {
                                             Toast.makeText(LoginActivity.this, "Authentication failed.",
                                                     Toast.LENGTH_SHORT).show();
                                         }
-
-
                                     }
                                 });
 
-
-
-
-
-
                         }
-
-
-
 
                     @Override
                     public void onCancel() {
-                        // App code
+                        // Do nothing if they cancel FB
                     }
 
                     @Override
                     public void onError(FacebookException exception) {
+                        // Let them know there's an error
                         Toast.makeText(LoginActivity.this, R.string.facebook_error,
                                 Toast.LENGTH_SHORT).show();
                     }
@@ -162,18 +174,18 @@ public class LoginActivity extends AppCompatActivity {
 
 
         mAuth = FirebaseAuth.getInstance();
-        if (mAuth.getCurrentUser() != null) {
-            Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
-            LoginActivity.this.startActivity(myIntent);
-            LoginActivity.this.finish();
-            return;
-        }
+        // If user is already logged in, just go straight to Home page
+//        if (mAuth.getCurrentUser() != null && mAuth.getCurrentUser().isEmailVerified()) {
+//            Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
+//            LoginActivity.this.startActivity(myIntent);
+//            LoginActivity.this.finish();
+//            return;
+//        }
 
         signInButton = (Button) findViewById(R.id.signInButton);
         final EditText email = (EditText) findViewById(R.id.email);
         final EditText password = (EditText) findViewById(R.id.password);
         password.setTransformationMethod(new PasswordTransformationMethod());
-
 
         signInButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -352,16 +364,18 @@ public class LoginActivity extends AppCompatActivity {
                                         }
                                     });
 
-
                             AlertDialog alert = builder.create();
                             alert.show();
                             enableUI();
                             return;
                         } else {
                             // Login successful, move onto the home page
-                            Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
-                            LoginActivity.this.startActivity(myIntent);
-                            LoginActivity.this.finish();
+//                            Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
+//                            LoginActivity.this.startActivity(myIntent);
+//                            LoginActivity.this.finish();
+                            Toast.makeText(LoginActivity.this, "Login Successful.",
+                                    Toast.LENGTH_SHORT).show();
+                            mAuth.signOut();
                         }
 
                         enableUI();

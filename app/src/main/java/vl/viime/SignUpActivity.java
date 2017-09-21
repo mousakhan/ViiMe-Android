@@ -112,7 +112,7 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                    final FirebaseAuth mAuth = FirebaseAuth.getInstance();
                     mAuth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString())
                             .addOnCompleteListener(SignUpActivity.this, new OnCompleteListener<AuthResult>() {
                                 @Override
@@ -134,7 +134,7 @@ public class SignUpActivity extends AppCompatActivity {
                                         Toast.makeText(SignUpActivity.this, "Sign up successful. Email verification sent.",
                                                 Toast.LENGTH_SHORT).show();
                                         startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
-                                        Log.d(TAG, "createUserWithEmail:success");
+                                        mAuth.getCurrentUser().sendEmailVerification();
                                         return;
                                     } else {
                                         // If sign in fails, display a message to the user.

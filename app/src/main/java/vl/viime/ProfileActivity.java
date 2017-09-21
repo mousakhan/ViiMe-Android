@@ -114,9 +114,9 @@ public class ProfileActivity extends AppCompatActivity {
 
 
         String userId = mUser.getUid().toString();
-        Log.d(TAG, userId);
+
         // If user id exists, then get all the data from backend
-        if (!userId.equals("") && userId != null) {
+        if (!mUser.getUid().equals("") && mUser.getUid() != null) {
             Log.d(TAG, ref.toString());
             // Attach a listener to read the data at the users node
             ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -136,7 +136,7 @@ public class ProfileActivity extends AppCompatActivity {
                     mAge = age;
                     String profile = (String) dataSnapshot.child("profile").getValue();
                     // Make sure profile exists, then set it to the imageview
-                    if (!profile.equals("") && profile != null) {
+                    if (profile != null && !profile.equals("")) {
                         Glide.with(ProfileActivity.this)
                                 .load(profile)
                                 .dontAnimate()
