@@ -37,6 +37,7 @@
         <activity android:name=".SignUpActivity" />
         <activity android:name=".HomeActivity" />
         <activity android:name=".ProfileActivity" />
+        <activity android:name=".FriendsActivity"></activity>
     </application>
 
 </manifest>

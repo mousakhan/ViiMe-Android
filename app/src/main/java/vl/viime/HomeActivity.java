@@ -21,12 +21,14 @@ public class HomeActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_friends:
                 // Clicking into friends list
+                Intent friendsIntent = new Intent(HomeActivity.this, FriendsActivity.class);
+                HomeActivity.this.startActivity(friendsIntent);
                 return true;
 
             case R.id.action_profile:
                 // Clicking profile page
-                Intent myIntent = new Intent(HomeActivity.this, ProfileActivity.class);
-                HomeActivity.this.startActivity(myIntent);
+                Intent profileIntent = new Intent(HomeActivity.this, ProfileActivity.class);
+                HomeActivity.this.startActivity(profileIntent);
                 return true;
 
             default:
