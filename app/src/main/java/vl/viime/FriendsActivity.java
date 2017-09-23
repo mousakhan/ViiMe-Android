@@ -3,6 +3,9 @@ package vl.viime;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -13,6 +16,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 public class FriendsActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
@@ -24,9 +31,22 @@ public class FriendsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_friends);
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        FirebaseUser user = mAuth.getCurrentUser();
+        final FirebaseUser user = mAuth.getCurrentUser();
 
-        final ArrayList<String> friendIds = new ArrayList<String>();
+        final ListView friendsListView = (ListView) findViewById(R.id.friends_list);
+
+
+//        final List<Map<String,String>> friends = new ArrayList<Map<String,String>>();
+        final List<String> friends = new ArrayList<String>();
+
+        final String[] friendsUsernames = {};
+
+
+        final ArrayAdapter friendsArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, friends);
+
+        friendsListView.setAdapter(friendsArrayAdapter);
+
+        friendsArrayAdapter.setNotifyOnChange(true);
 
         if (user != null && !user.getUid().equals("")) {
             mDatabase.child("users/" + user.getUid() + "/friends").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -36,9 +56,13 @@ public class FriendsActivity extends AppCompatActivity {
                         mDatabase.child("users/" + snapshot.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot userDatasnapshot) {
-                                for (DataSnapshot userSnapshot : userDatasnapshot.getChildren()) {
-                                    Log.d (TAG, userSnapshot.toString());
-                                }
+                                    String username = (String) userDatasnapshot.child("username").getValue();
+                                    String id = (String) userDatasnapshot.child("id").getValue();
+                                    Map<String, String> map = new HashMap<>();
+                                    map.put("username", username);
+                                    map.put("id", id);
+                                    friends.add(username);
+                                    ((BaseAdapter) friendsListView.getAdapter()).notifyDataSetChanged();
                             }
 
                             @Override
@@ -48,9 +72,6 @@ public class FriendsActivity extends AppCompatActivity {
                         });
 
                     }
-
-
-
                 }
 
                 @Override

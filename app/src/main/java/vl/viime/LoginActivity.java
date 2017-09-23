@@ -177,13 +177,13 @@ public class LoginActivity extends AppCompatActivity {
 
 
         mAuth = FirebaseAuth.getInstance();
-        // If user is already logged in, just go straight to Home page
-//        if (mAuth.getCurrentUser() != null && mAuth.getCurrentUser().isEmailVerified()) {
-//            Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
-//            LoginActivity.this.startActivity(myIntent);
-//            LoginActivity.this.finish();
-//            return;
-//        }
+//         If user is already logged in, just go straight to Home page
+        if (mAuth.getCurrentUser() != null && mAuth.getCurrentUser().isEmailVerified()) {
+            Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
+            LoginActivity.this.startActivity(myIntent);
+            LoginActivity.this.finish();
+            return;
+        }
 
         signInButton = (Button) findViewById(R.id.signInButton);
         final EditText email = (EditText) findViewById(R.id.email);

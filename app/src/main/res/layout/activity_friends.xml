@@ -4,8 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="vl.viime.FriendsActivity">
+    tools:context="vl.viime.FriendsActivity"
+    android:background="#444A59">
     <ListView
+        android:id="@+id/friends_list"
         android:layout_width="304dp"
         android:layout_height="473dp"
         tools:layout_editor_absoluteY="8dp"
