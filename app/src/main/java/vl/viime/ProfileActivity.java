@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
@@ -67,57 +68,59 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        getSupportActionBar().hide();
+
         final TextView mUsernameTextView = (TextView) findViewById(R.id.username);
         final EditText mNameEditText = (EditText) findViewById(R.id.name);
         final EditText mEmailEditText = (EditText) findViewById(R.id.email);
         final EditText mAgeEditText = (EditText) findViewById(R.id.birthday);
         final ListView mListView = (ListView) findViewById(R.id.rewards_list);
+
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mProfileImageView = (ImageView) findViewById(R.id.profile_picture);
         mUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        DatabaseReference ref = mDatabase.child("users/" + mUser.getUid() + "/personal-deals");
-        // Attach a listener to read the data at the users node
-        ref.child("/personal-deals").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            // Getting the user information and setting it into the views
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                if (dataSnapshot != null) {
-                    String[] list = {"T", "D"};
-                    ArrayAdapter adapter = new ArrayAdapter(ProfileActivity.this, android.R.layout.simple_list_item_2, android.R.id.text1, list) {
-                        @Override
-                        public View getView(int position, View convertView, ViewGroup parent) {
-                            View view = super.getView(position, convertView, parent);
-                            TextView text1 = (TextView) view.findViewById(android.R.id.text1);
-                            TextView text2 = (TextView) view.findViewById(android.R.id.text2);
-
-                            text1.setText("YA");
-                            text2.setText("T");
-                            return view;
-                        }
-                    };
-
-                    mListView.setAdapter((ListAdapter)adapter);
-
-                    mListView.setEmptyView(findViewById(R.id.empty));
-                }
-
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d(TAG, "Being cancelled");
-            }
-        });
+//        DatabaseReference ref = mDatabase.child("users/" + mUser.getUid() + "/personal-deals");
+//        // Attach a listener to read the data at the users node
+//        ref.child("/personal-deals").addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            // Getting the user information and setting it into the views
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//
+////                if (dataSnapshot != null) {
+////                    String[] list = {"Item 1", "Item 2"};
+////                    ArrayAdapter adapter = new ArrayAdapter(ProfileActivity.this, android.R.layout.simple_list_item_2, android.R.id.text1, list) {
+////                        @Override
+////                        public View getView(int position, View convertView, ViewGroup parent) {
+////                            View view = super.getView(position, convertView, parent);
+////                            TextView text1 = (TextView) view.findViewById(android.R.id.text1);
+////                            TextView text2 = (TextView) view.findViewById(android.R.id.text2);
+////
+////                            text1.setText("Subitem 1");
+////                            text2.setText("Subitem 2");
+////                            return view;
+////                        }
+////                    };
+////
+////                    mListView.setAdapter((ListAdapter)adapter);
+////
+////                    mListView.setEmptyView(findViewById(R.id.empty));
+//                }
+//
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//                Log.d(TAG, "Being cancelled");
+//            }
+//        });
 
 
         String userId = mUser.getUid().toString();
-
         // If user id exists, then get all the data from backend
         if (!mUser.getUid().equals("") && mUser.getUid() != null) {
-            Log.d(TAG, ref.toString());
+            DatabaseReference ref = mDatabase.child("users/" + userId);
             // Attach a listener to read the data at the users node
             ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -162,24 +165,14 @@ public class ProfileActivity extends AppCompatActivity {
                             @Override
                             public void onPickResult(PickResult r) {
                                 if (r.getError() == null) {
-                                    //If you want the Uri.
-                                    //Mandatory to refresh image from Uri.
-                                    //getImageView().setImageURI(null);
-
-                                    //Setting the real returned image.
-                                    //getImageView().setImageURI(r.getUri());
-
-                                    //If you want the Bitmap.
+                                    // Set bitmap then upload file to Firebase
                                     mProfileImageView.setImageBitmap(r.getBitmap());
                                     uploadFile();
-                                    //Image path
-                                    //r.getPath();
                                 } else {
 
                                 }
                             }
                         }).show(ProfileActivity.this);
-
 
             }
         });

@@ -96,6 +96,8 @@ public class LoginActivity extends AppCompatActivity {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_login);
 
+        getSupportActionBar().hide();
+
         callbackManager = CallbackManager.Factory.create();
 
         LoginManager.getInstance().registerCallback(callbackManager,
@@ -370,12 +372,9 @@ public class LoginActivity extends AppCompatActivity {
                             return;
                         } else {
                             // Login successful, move onto the home page
-//                            Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
-//                            LoginActivity.this.startActivity(myIntent);
-//                            LoginActivity.this.finish();
-                            Toast.makeText(LoginActivity.this, "Login Successful.",
-                                    Toast.LENGTH_SHORT).show();
-                            mAuth.signOut();
+                            Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
+                            LoginActivity.this.startActivity(myIntent);
+                            LoginActivity.this.finish();
                         }
 
                         enableUI();
