@@ -68,7 +68,7 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        getSupportActionBar().hide();
+        getSupportActionBar().setTitle("Profile");
 
         final TextView mUsernameTextView = (TextView) findViewById(R.id.username);
         final EditText mNameEditText = (EditText) findViewById(R.id.name);
