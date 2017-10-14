@@ -89,20 +89,20 @@ public class ProfileActivity extends AppCompatActivity {
 //
 ////                if (dataSnapshot != null) {
 ////                    String[] list = {"Item 1", "Item 2"};
-////                    ArrayAdapter adapter = new ArrayAdapter(ProfileActivity.this, android.R.layout.simple_list_item_2, android.R.id.text1, list) {
-////                        @Override
-////                        public View getView(int position, View convertView, ViewGroup parent) {
-////                            View view = super.getView(position, convertView, parent);
-////                            TextView text1 = (TextView) view.findViewById(android.R.id.text1);
-////                            TextView text2 = (TextView) view.findViewById(android.R.id.text2);
-////
-////                            text1.setText("Subitem 1");
-////                            text2.setText("Subitem 2");
-////                            return view;
-////                        }
-////                    };
-////
-////                    mListView.setAdapter((ListAdapter)adapter);
+//                    ArrayAdapter adapter = new ArrayAdapter(ProfileActivity.this, android.R.layout.simple_list_item_2, android.R.id.text1, list) {
+//                        @Override
+//                        public View getView(int position, View convertView, ViewGroup parent) {
+//                            View view = super.getView(position, convertView, parent);
+//                            TextView text1 = (TextView) view.findViewById(android.R.id.text1);
+//                            TextView text2 = (TextView) view.findViewById(android.R.id.text2);
+//
+//                            text1.setText("Subitem 1");
+//                            text2.setText("Subitem 2");
+//                            return view;
+//                        }
+//                    };
+//
+//                    mListView.setAdapter((ListAdapter)adapter);
 ////
 ////                    mListView.setEmptyView(findViewById(R.id.empty));
 //                }

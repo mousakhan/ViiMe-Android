@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:background="@drawable/rectangle"
-    android:padding="5dp">
+    >
 
     <TextView
         android:id="@+id/name"
@@ -71,8 +71,7 @@
         android:tint="@color/white"
         app:layout_constraintTop_toBottomOf="@+id/price_image"
         app:srcCompat="@drawable/cuisine"
-        app:layout_constraintRight_toRightOf="@+id/price_image"
-        android:layout_marginRight="0dp" />
+        app:layout_constraintRight_toRightOf="@+id/price_image" />
 
     <TextView
         android:id="@+id/type_text"
@@ -136,6 +135,51 @@
         app:layout_constraintRight_toLeftOf="@+id/price_text"
         app:layout_constraintTop_toBottomOf="@+id/logo" />
 
+    <View
+        android:layout_width="331dp"
+        android:id="@+id/deal_bar"
+        android:layout_height="23dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="1dp"
+        android:layout_marginRight="1dp"
+        android:alpha="1"
+        android:background="@drawable/purple_rectangle"
+        android:visibility="visible"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/type_image"
+        app:layout_constraintHorizontal_bias="0.454"
+       >
+
+    </View>
+
+
+    <TextView
+        android:id="@+id/numberOfDealsText"
+        android:layout_width="wrap_content"
+        android:layout_height="23dp"
+        android:layout_marginLeft="8dp"
+        android:text="Deals"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/deal_bar"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="@+id/deal_bar"
+        app:layout_constraintTop_toTopOf="@+id/deal_bar"
+        app:layout_constraintVertical_bias="0.0">
+
+    </TextView>
+
+    <ImageView
+        android:id="@+id/forward_icon"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/deal_bar"
+        app:layout_constraintBottom_toBottomOf="@+id/deal_bar"
+        android:layout_marginRight="5dp"
+        android:tint="@color/white"
+        app:srcCompat="@drawable/forward" />
 
 
 </android.support.constraint.ConstraintLayout>

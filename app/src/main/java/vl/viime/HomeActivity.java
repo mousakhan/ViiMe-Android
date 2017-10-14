@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 
@@ -19,17 +21,22 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
+    private ArrayList<Venue> venues;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         final GridView gridView = (GridView)findViewById(R.id.gridview);
+
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
         DatabaseReference ref = mDatabase.child("venue");
@@ -38,7 +45,7 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 long count = dataSnapshot.getChildrenCount();
-                final List<Venue> venues = new ArrayList<Venue>();
+                venues = new ArrayList<Venue>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Venue venue = new Venue();
                     venue.name = (String)snapshot.child("name").getValue();
@@ -55,6 +62,15 @@ public class HomeActivity extends AppCompatActivity {
                     venue.number = (String)snapshot.child("number").getValue();
                     venue.latitude = (double)snapshot.child("lat").getValue();
                     venue.longitude = (double)snapshot.child("long").getValue();
+                    venue.numberOfDeals = snapshot.child("deals").getChildrenCount();
+                    venue.deals = new ArrayList<String>();
+                    for (String key : ( (Map<String,?>)snapshot.child("deals").getValue()).keySet()) {
+                        // This should never be the case, but just in case
+                        if (key != null) {
+                            venue.deals.add(key);
+                        }
+                    }
+
                     venues.add(venue);
                     if (count == venues.size()) {
                         VenuesAdapter venuesAdapter = new VenuesAdapter(HomeActivity.this, venues);
@@ -70,8 +86,19 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-//                Venue[] venues = {new Venue()};
-//        VenuesAdapter booksAdapter = new VenuesAdapter(this, venues);
+
+
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View v,
+                                    int position, long id) {
+                System.out.println(venues.get(position).toString());
+                Intent i = new Intent(HomeActivity.this, DealActivity.class);
+                i.putExtra("venue", venues.get(position));
+                startActivity(i);
+            }
+        });
+
 
     }
 

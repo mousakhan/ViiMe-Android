@@ -41,10 +41,6 @@ public class FriendsActivity extends AppCompatActivity {
 //        final List<Map<String,String>> friends = new ArrayList<Map<String,String>>();
 //
 
-
-
-
-
         if (user != null && !user.getUid().equals("")) {
             mDatabase.child("users/" + user.getUid() + "/friends").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override

@@ -64,7 +64,7 @@ public class VenuesAdapter extends BaseAdapter {
         final TextView priceTextView = (TextView)convertView.findViewById(R.id.price_text);
         final TextView locationTextView = (TextView)convertView.findViewById(R.id.location_text);
         final TextView cuisineTextView = (TextView)convertView.findViewById(R.id.cuisine_text);
-
+        final TextView dealsTextView = (TextView)convertView.findViewById(R.id.numberOfDealsText);
 
 
         // 4
@@ -72,11 +72,13 @@ public class VenuesAdapter extends BaseAdapter {
                 .load(venue.logo)
                 .dontAnimate()
                 .into(imageView);
+
         nameTextView.setText(venue.name);
         typeTextView.setText(venue.type);
         priceTextView.setText(venue.price);
         locationTextView.setText(venue.city);
         cuisineTextView.setText(venue.cuisine);
+        dealsTextView.setText(venue.numberOfDeals + " Deals");
 
         return convertView;
 
