@@ -65,10 +65,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_friends:
-                // User chose the "Settings" item, show the app settings UI...
-                return true;
-
             case R.id.action_profile:
                 Intent myIntent = new Intent(LoginActivity.this, ProfileActivity.class);
                 LoginActivity.this.startActivity(myIntent);
@@ -118,6 +114,7 @@ public class LoginActivity extends AppCompatActivity {
                                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                                     if (dataSnapshot.child("username").exists()) {
                                                         Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
+
                                                         LoginActivity.this.startActivity(myIntent);
                                                     } else {
                                                         AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this);

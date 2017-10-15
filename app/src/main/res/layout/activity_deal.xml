@@ -6,9 +6,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:fillViewport="true">
 
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+ <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:app="http://schemas.android.com/apk/res-auto"
+     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="vl.viime.DealActivity"
@@ -16,16 +16,17 @@
 
  <View
      android:id="@+id/venue_description_background"
-     android:layout_width="match_parent"
-     android:layout_height="wrap_content"
+     android:layout_width="0dp"
+     android:layout_height="300dp"
      android:layout_marginTop="16dp"
      android:background="@drawable/rectangle"
      app:layout_constraintLeft_toLeftOf="parent"
      app:layout_constraintRight_toRightOf="parent"
      app:layout_constraintTop_toTopOf="parent"
-     app:layout_constraintBottom_toTopOf="deals"
      android:layout_marginLeft="16dp"
-     android:layout_marginRight="16dp">
+     android:layout_marginRight="16dp"
+     android:layout_marginStart="16dp"
+     android:layout_marginEnd="16dp">
 
  </View>
 
@@ -90,8 +91,8 @@
      android:id="@+id/venue_description"
      android:layout_width="300dp"
      android:layout_height="wrap_content"
-     android:layout_marginLeft="16dp"
-     android:layout_marginRight="16dp"
+     android:layout_marginLeft="8dp"
+     android:layout_marginRight="8dp"
      android:layout_marginTop="15dp"
      android:text="TextView"
      android:textColor="@color/white"
@@ -191,7 +192,7 @@
 
  <TextView
      android:id="@+id/number_of_deals"
-     android:layout_width="match_parent"
+     android:layout_width="0dp"
      android:layout_height="wrap_content"
      android:layout_marginLeft="16dp"
      android:layout_marginRight="16dp"
@@ -204,19 +205,26 @@
      app:layout_constraintLeft_toLeftOf="parent"
      app:layout_constraintRight_toRightOf="parent"
      app:layout_constraintTop_toBottomOf="@+id/venue_description_background"
-     android:background="@drawable/rectangle"/>
-
- <ListView
-     android:id="@+id/deals_list"
-     android:layout_width="match_parent"
-     android:layout_height="wrap_content"
      android:background="@drawable/rectangle"
-     app:layout_constraintLeft_toLeftOf="parent"
-     app:layout_constraintRight_toRightOf="parent"
-     app:layout_constraintTop_toBottomOf="@+id/number_of_deals"
-     android:layout_marginLeft="16dp"
-     android:layout_marginRight="16dp"
-     />
+     android:layout_marginStart="16dp"
+     android:layout_marginEnd="16dp" />
+
+  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+      android:orientation="vertical"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:background="@drawable/rectangle"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/number_of_deals"
+      android:id="@+id/deals_list"
+      android:layout_marginStart="16dp"
+      android:layout_marginEnd="16dp"
+      android:divider="@drawable/divider"
+      android:dividerPadding="10dp"
+      android:showDividers="middle">
+  </LinearLayout>
+
 
 </android.support.constraint.ConstraintLayout>
 </ScrollView>

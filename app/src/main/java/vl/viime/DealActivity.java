@@ -10,10 +10,13 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -39,8 +42,12 @@ public class DealActivity extends AppCompatActivity {
         setContentView(R.layout.activity_deal);
 
 
+
+
         Intent intent = getIntent();
         venue = (Venue) intent.getSerializableExtra("venue");
+        getSupportActionBar().setTitle(venue.name);
+
         TextView description = (TextView) findViewById(R.id.venue_description);
         description.setText(venue.description);
         final TextView number = (TextView) findViewById(R.id.phone_text);
@@ -104,8 +111,8 @@ public class DealActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(Intent.ACTION_VIEW,
-                            Uri.parse(String.format("geo:0,0?q=%s",
-                                    URLEncoder.encode(address.getText().toString())))));
+                        Uri.parse(String.format("geo:0,0?q=%s",
+                                URLEncoder.encode(address.getText().toString())))));
             }
         });
 
@@ -128,8 +135,11 @@ public class DealActivity extends AppCompatActivity {
                 .into(logo);
 
 
-
         final ArrayList<Deal> deals = new ArrayList<Deal>();
+
+
+        final LinearLayout layout = (LinearLayout) findViewById(R.id.deals_list);
+
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
         DatabaseReference ref = mDatabase.child("deal");
@@ -137,11 +147,10 @@ public class DealActivity extends AppCompatActivity {
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                ListView dealsListView = (ListView) findViewById(R.id.deals_list);
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String id = (String) snapshot.child("id").getValue();
-                    System.out.println("The id is"+id);
-                    System.out.println("The deals are"+ venue.deals.toString());
+                    System.out.println("The id is" + id);
+                    System.out.println("The deals are" + venue.deals.toString());
                     if (venue.deals.contains(id)) {
                         System.out.println("The id in here is ");
                         Deal deal = new Deal();
@@ -173,7 +182,38 @@ public class DealActivity extends AppCompatActivity {
                                 return view;
                             }
                         };
-                        dealsListView.setAdapter(adapter);
+
+                        final int adapterCount = adapter.getCount();
+
+                        if (adapterCount == venue.deals.size()) {
+                            for (int i = 0; i < adapterCount; i++) {
+                                View item = adapter.getView(i, null, null);
+                                final int position = i;
+                                item.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent intent = new Intent(DealActivity.this, RedemptionActivity.class);
+                                        String title = deals.get(position).title.toString();
+                                        String shortDescription = deals.get(position).shortDescription.toString();
+                                        String validTo = deals.get(position).validTo.toString();
+                                        String numberOfPeople = deals.get(position).numberOfPeople.toString();
+
+                                        intent.putExtra("title", title);
+                                        intent.putExtra("shortDescription", shortDescription);
+                                        intent.putExtra("validTo", validTo);
+                                        intent.putExtra("numberOfPeople", numberOfPeople);
+                                        intent.putExtra("venue", venue.id);
+                                        intent.putExtra("redemptionCode", venue.code);
+
+                                        startActivity(intent);
+                                    }
+                                });
+
+                                layout.addView(item);
+                            }
+                        }
+
+
                     }
 
                 }
@@ -186,10 +226,5 @@ public class DealActivity extends AppCompatActivity {
         });
 
 
-
-
-
-
     }
-
 }

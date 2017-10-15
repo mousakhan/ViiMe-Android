@@ -10,7 +10,6 @@
     android:clickable="true"
     android:focusableInTouchMode="true">
 
-
     <ImageView
         android:id="@+id/logo"
         app:layout_constraintTop_toTopOf="parent"

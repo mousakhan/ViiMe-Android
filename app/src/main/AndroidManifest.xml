@@ -3,7 +3,9 @@
     package="vl.viime">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CALL_PHONE"></uses-permission>
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -27,19 +29,28 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
-        <activity android:name=".LoginActivity">
+        <activity android:name=".LoginActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ForgotPasswordActivity" />
-        <activity android:name=".SignUpActivity" />
-        <activity android:name=".HomeActivity" />
-        <activity android:name=".ProfileActivity" />
-        <activity android:name=".FriendsActivity" />
-        <activity android:name=".DealActivity"></activity>
+        <activity android:name=".ForgotPasswordActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".SignUpActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".HomeActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ProfileActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".FriendsActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".DealActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".RedemptionActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

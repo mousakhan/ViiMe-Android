@@ -1,6 +1,8 @@
 package vl.viime;
 
 import android.content.Intent;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -36,6 +38,8 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         final GridView gridView = (GridView)findViewById(R.id.gridview);
+
+        getSupportActionBar().setTitle("Venues");
 
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -98,27 +102,26 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
-
-
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu,menu);
+        for(int i = 0; i < menu.size(); i++){
+            Drawable drawable = menu.getItem(i).getIcon();
+            if(drawable != null) {
+                drawable.mutate();
+                drawable.setColorFilter(getResources().getColor(R.color.gray), PorterDuff.Mode.SRC_ATOP);
+            }
+        }
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_friends:
-                // Clicking into friends list
-                Intent friendsIntent = new Intent(HomeActivity.this, FriendsActivity.class);
-                HomeActivity.this.startActivity(friendsIntent);
-                return true;
-
             case R.id.action_profile:
                 // Clicking profile page
                 Intent profileIntent = new Intent(HomeActivity.this, ProfileActivity.class);

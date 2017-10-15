@@ -28,4 +28,14 @@
     <string name="profile_update_fail">Profile failed to update. Please try again.</string>
     <string name="profile_update_success">Profile updated successfully.</string>
     <string name="facebook_error">Failed to login with Facebook. Please try again.</string>
+    <string name="empty_deals">No deals are currently available for this venue. Check back later!</string>
+    <string name="wrong_redemption_code">Incorrect redemption code entered. Please try again. </string>
+    <string name="gps_not_found_title">Location services not available </string>
+    <string name="gps_not_found_message">It is required for deal redemption. Would you like to enable them now?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="redemption_successful">Redemption successful</string>
+    <string name="redemption_unsuccessful">Redemption unsuccessful. Please try again.</string>
+
+
 </resources>

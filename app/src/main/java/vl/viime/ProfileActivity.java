@@ -1,10 +1,12 @@
 package vl.viime;
 
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.v4.content.IntentCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.view.ActionMode;
@@ -16,6 +18,7 @@ import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
@@ -80,6 +83,17 @@ public class ProfileActivity extends AppCompatActivity {
         mProfileImageView = (ImageView) findViewById(R.id.profile_picture);
         mUser = FirebaseAuth.getInstance().getCurrentUser();
 
+        Button logoutButton = (Button) findViewById(R.id.logout_button);
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
+                intent.addFlags(IntentCompat.FLAG_ACTIVITY_CLEAR_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        });
 //        DatabaseReference ref = mDatabase.child("users/" + mUser.getUid() + "/personal-deals");
 //        // Attach a listener to read the data at the users node
 //        ref.child("/personal-deals").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -296,6 +310,8 @@ public class ProfileActivity extends AppCompatActivity {
                 ref.setValue(downloadUrl.toString());
             }
         });
+
+
 
     }
 

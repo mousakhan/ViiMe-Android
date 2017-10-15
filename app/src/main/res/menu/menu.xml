@@ -5,8 +5,4 @@
         android:icon="@drawable/user"
         android:title=""
         app:showAsAction="always"  />
-    <item android:id="@+id/action_friends"
-        android:icon="@drawable/contacts"
-        android:title=""
-        app:showAsAction="always"  />
 </menu>

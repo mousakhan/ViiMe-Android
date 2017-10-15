@@ -1,10 +1,12 @@
 package vl.viime;
 
+import java.io.Serializable;
+
 /**
  * Created by mousakhan on 2017-10-09.
  */
 
-public class Deal {
+public class Deal implements Serializable {
     String id;
     String shortDescription;
     String title;
