@@ -51,6 +51,10 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".RedemptionActivity"
             android:screenOrientation="portrait"/>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="b392fe91480f8f6f9fc37eb7b72f4d5998eb0c66"
+            />
     </application>
 
 </manifest>

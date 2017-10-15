@@ -162,7 +162,7 @@ public class DealActivity extends AppCompatActivity {
                         deal.validTo = (String) snapshot.child("valid-to").getValue();
                         deal.validFrom = (String) snapshot.child("valid-from").getValue();
                         deal.venueId = (String) snapshot.child("venue-id").getValue();
-                        deal.numRedeptionsRequired = (String) snapshot.child("num-redemptions").getValue();
+                        deal.numberOfRedemptionsAllowed = (String) snapshot.child("num-redemptions").getValue();
                         deals.add(deal);
 
                         ArrayAdapter adapter = new ArrayAdapter(DealActivity.this, android.R.layout.simple_list_item_2, android.R.id.text1, deals) {
@@ -196,12 +196,20 @@ public class DealActivity extends AppCompatActivity {
                                         String title = deals.get(position).title.toString();
                                         String shortDescription = deals.get(position).shortDescription.toString();
                                         String validTo = deals.get(position).validTo.toString();
+                                        String validFrom = deals.get(position).validFrom.toString();
+                                        String recurringTo = deals.get(position).recurringTo.toString();
+                                        String recurringFrom = deals.get(position).recurringFrom.toString();
+                                        String numberOfRedemptionsAllowed = deals.get(position).numberOfRedemptionsAllowed.toString();
                                         String numberOfPeople = deals.get(position).numberOfPeople.toString();
 
                                         intent.putExtra("title", title);
                                         intent.putExtra("shortDescription", shortDescription);
                                         intent.putExtra("validTo", validTo);
+                                        intent.putExtra("validFrom", validFrom);
+                                        intent.putExtra("recurringTo", recurringTo);
+                                        intent.putExtra("recurringFrom", recurringFrom);
                                         intent.putExtra("numberOfPeople", numberOfPeople);
+                                        intent.putExtra("numberOfRedemptionsAllowed", numberOfRedemptionsAllowed);
                                         intent.putExtra("venue", venue.id);
                                         intent.putExtra("redemptionCode", venue.code);
 

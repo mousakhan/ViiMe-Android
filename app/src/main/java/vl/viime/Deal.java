@@ -10,7 +10,7 @@ public class Deal implements Serializable {
     String id;
     String shortDescription;
     String title;
-    String numRedeptionsRequired;
+    String numberOfRedemptionsAllowed;
     String validFrom;
     String validTo;
     String recurringFrom;

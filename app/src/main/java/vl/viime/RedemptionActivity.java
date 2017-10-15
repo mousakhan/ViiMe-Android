@@ -62,20 +62,32 @@ public class RedemptionActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Deal Information");
 
         Intent intent = getIntent();
+        final String validTo = intent.getStringExtra("validTo");
+        final String validFrom = intent.getStringExtra("validFrom");
+        final String recurringTo = intent.getStringExtra("recurringTo");
+        final String recurringFrom = intent.getStringExtra("recurringFrom");
+        final String maxNumberOfRedemptions = intent.getStringExtra("numberOfRedemptionsAllowed");
+        final String venueId = intent.getStringExtra("venue");
+        final String title = intent.getStringExtra("title");
+        final String shortDescription = intent.getStringExtra("shortDescription");
+        final String numberOfPeopleString = intent.getStringExtra("numberOfPeople");
+        final int numberOfPeopleRequired = Integer.parseInt(intent.getStringExtra("numberOfPeople"));
+
+
 
         final String code = intent.getStringExtra("redemptionCode");
 
         TextView dealTitle = (TextView) findViewById(R.id.deal_title);
-        dealTitle.setText(intent.getStringExtra("title"));
+        dealTitle.setText(title);
 
-        String validity = intent.getStringExtra("validTo");
+
         TextView dealValidity = (TextView) findViewById(R.id.deal_validity);
         dealValidity.setText(intent.getStringExtra("shortDescription"));
 
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
         try {
-            Date parsed = format.parse(validity.toString());
+            Date parsed = format.parse(validTo.toString());
             System.out.println(parsed);
 
             Calendar calendar = new GregorianCalendar();
@@ -94,9 +106,6 @@ public class RedemptionActivity extends AppCompatActivity {
             //Handle exception here, most of the time you will just log it.
             e.printStackTrace();
         }
-
-
-        final int numberOfPeopleRequired = Integer.parseInt(intent.getStringExtra("numberOfPeople"));
 
 
         TextView numberOfPeopleToBringText = (TextView) findViewById(R.id.number_of_people_text);
@@ -124,7 +133,6 @@ public class RedemptionActivity extends AppCompatActivity {
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                System.out.println("I HEREEE");
                 currentUser.username = (String) dataSnapshot.child("username").getValue().toString();
                 currentUser.profile = (String) dataSnapshot.child("profile").getValue().toString();
                 users.add(currentUser);
@@ -155,9 +163,8 @@ public class RedemptionActivity extends AppCompatActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(RedemptionActivity.this);
                 builder.setTitle("Please enter the redemption code");
 
-// Set up the input
+
                 final EditText input = new EditText(RedemptionActivity.this);
-// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
                 input.setInputType(InputType.TYPE_CLASS_NUMBER);
                 builder.setView(input);
 
@@ -177,9 +184,9 @@ public class RedemptionActivity extends AppCompatActivity {
                                 PackageManager.PERMISSION_GRANTED &&
                                 ContextCompat.checkSelfPermission(RedemptionActivity.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) ==
                                         PackageManager.PERMISSION_GRANTED) {
-                            DatabaseReference redemptionRef = mDatabase.child("redemptions");
-                            LocationManager lm = (LocationManager)getSystemService(RedemptionActivity.LOCATION_SERVICE);
-                            LocationListener locationListenerGPS =new LocationListener() {
+
+                                LocationManager lm = (LocationManager)getSystemService(RedemptionActivity.LOCATION_SERVICE);
+                                LocationListener locationListenerGPS =new LocationListener() {
                                 @Override
                                 public void onLocationChanged(android.location.Location location) {
                                     currLocation = location;
@@ -217,6 +224,17 @@ public class RedemptionActivity extends AppCompatActivity {
                                 newRedemption.put("latitude", latitude);
                                 newRedemption.put("longitude", longitude);
                                 newRedemption.put("redeemed", ServerValue.TIMESTAMP);
+                                newRedemption.put("title", title);
+                                newRedemption.put("short-description", shortDescription);
+                                newRedemption.put("num-people", numberOfPeopleString);
+                                newRedemption.put("num-redemptions", maxNumberOfRedemptions);
+                                newRedemption.put("validTo", validTo);
+                                newRedemption.put("validFrom", validFrom);
+                                newRedemption.put("recurringTo", recurringTo);
+                                newRedemption.put("recurringFrom", recurringFrom);
+                                newRedemption.put("ownerId", currentUser.id);
+                                newRedemption.put("owner", currentUser.username);
+                                newRedemption.put("venue", venueId);
 
                                 mDatabase.child("redemptions").push().setValue(newRedemption);
 
