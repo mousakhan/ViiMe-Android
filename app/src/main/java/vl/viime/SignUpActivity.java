@@ -219,7 +219,7 @@ public class SignUpActivity extends AppCompatActivity {
                                     Toast.LENGTH_SHORT).show();
                             return;
                         } else {
-                            FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                            final FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
                             mAuth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString())
                                     .addOnCompleteListener(SignUpActivity.this, new OnCompleteListener<AuthResult>() {
@@ -242,6 +242,7 @@ public class SignUpActivity extends AppCompatActivity {
                                                 Toast.makeText(SignUpActivity.this, "Sign up successful. Email verification sent.",
                                                         Toast.LENGTH_SHORT).show();
                                                 startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
+                                                mAuth.getCurrentUser().sendEmailVerification();
                                                 Log.d(TAG, "createUserWithEmail:success");
                                                 return;
                                             } else {

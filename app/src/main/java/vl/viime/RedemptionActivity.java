@@ -87,7 +87,7 @@ public class RedemptionActivity extends AppCompatActivity {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
         try {
-            Date parsed = format.parse(validTo.toString());
+            Date parsed = format.parse(validTo);
             System.out.println(parsed);
 
             Calendar calendar = new GregorianCalendar();
@@ -134,7 +134,12 @@ public class RedemptionActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 currentUser.username = (String) dataSnapshot.child("username").getValue().toString();
+
                 currentUser.profile = (String) dataSnapshot.child("profile").getValue().toString();
+                if (currentUser.profile == null) {
+                    currentUser.profile = "";
+                }
+
                 users.add(currentUser);
                 for (int i = 1; i < numberOfPeopleRequired; i++) {
                     User user = new User();

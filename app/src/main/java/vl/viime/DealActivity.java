@@ -193,23 +193,48 @@ public class DealActivity extends AppCompatActivity {
                                     @Override
                                     public void onClick(View v) {
                                         Intent intent = new Intent(DealActivity.this, RedemptionActivity.class);
-                                        String title = deals.get(position).title.toString();
-                                        String shortDescription = deals.get(position).shortDescription.toString();
-                                        String validTo = deals.get(position).validTo.toString();
-                                        String validFrom = deals.get(position).validFrom.toString();
-                                        String recurringTo = deals.get(position).recurringTo.toString();
-                                        String recurringFrom = deals.get(position).recurringFrom.toString();
-                                        String numberOfRedemptionsAllowed = deals.get(position).numberOfRedemptionsAllowed.toString();
-                                        String numberOfPeople = deals.get(position).numberOfPeople.toString();
 
-                                        intent.putExtra("title", title);
-                                        intent.putExtra("shortDescription", shortDescription);
-                                        intent.putExtra("validTo", validTo);
-                                        intent.putExtra("validFrom", validFrom);
-                                        intent.putExtra("recurringTo", recurringTo);
-                                        intent.putExtra("recurringFrom", recurringFrom);
-                                        intent.putExtra("numberOfPeople", numberOfPeople);
-                                        intent.putExtra("numberOfRedemptionsAllowed", numberOfRedemptionsAllowed);
+                                        if (deals.get(position).title != null) {
+                                            String title = deals.get(position).title.toString();
+                                            intent.putExtra("title", title);
+                                        }
+
+                                        if (deals.get(position).shortDescription != null) {
+                                            String shortDescription = deals.get(position).shortDescription.toString();
+                                            intent.putExtra("shortDescription", shortDescription);
+                                        }
+
+                                        if (deals.get(position).validTo != null) {
+                                            String validTo = deals.get(position).validTo.toString();
+                                            intent.putExtra("validTo", validTo);
+                                        }
+
+                                        if (deals.get(position).validFrom != null) {
+                                            String validFrom = deals.get(position).validFrom.toString();
+                                            intent.putExtra("validFrom", validFrom);
+                                        }
+
+                                        if (deals.get(position).recurringTo != null) {
+                                            String recurringTo = deals.get(position).recurringTo.toString();
+                                            intent.putExtra("recurringTo", recurringTo);
+                                        }
+
+                                        if (deals.get(position).recurringFrom != null) {
+                                            String recurringFrom = deals.get(position).recurringFrom.toString();
+                                            intent.putExtra("recurringFrom", recurringFrom);
+                                        }
+                                        if (deals.get(position).numberOfRedemptionsAllowed != null) {
+                                            String numberOfRedemptionsAllowed = deals.get(position).numberOfRedemptionsAllowed.toString();
+                                            intent.putExtra("numberOfRedemptionsAllowed", numberOfRedemptionsAllowed);
+                                        }
+
+
+                                        if (deals.get(position).numberOfPeople != null) {
+                                            String numberOfPeople = deals.get(position).numberOfPeople.toString();
+                                            intent.putExtra("numberOfPeople", numberOfPeople);
+                                        }
+
+
                                         intent.putExtra("venue", venue.id);
                                         intent.putExtra("redemptionCode", venue.code);
 

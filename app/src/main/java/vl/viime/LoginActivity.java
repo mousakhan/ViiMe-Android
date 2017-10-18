@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ScaleDrawable;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
@@ -42,12 +43,18 @@ import com.google.firebase.auth.FacebookAuthCredential;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.crashlytics.android.Crashlytics;
+import com.google.zxing.common.StringUtils;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import io.fabric.sdk.android.Fabric;
 
 
@@ -105,7 +112,8 @@ public class LoginActivity extends AppCompatActivity {
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
-                    public void onSuccess(LoginResult loginResult) {
+                    public void onSuccess(final LoginResult loginResult) {
+                        disableUI();
                         final AuthCredential credential = FacebookAuthProvider.getCredential(loginResult.getAccessToken().getToken());
                         mAuth.signInWithCredential(credential)
                                 .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
@@ -113,30 +121,130 @@ public class LoginActivity extends AppCompatActivity {
                                     public void onComplete(@NonNull Task<AuthResult> task) {
                                         if (task.isSuccessful()) {
                                             FirebaseUser user = mAuth.getCurrentUser();
-                                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users/" + user.getUid());
+                                            final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users/" + user.getUid());
                                             ref.addListenerForSingleValueEvent(new ValueEventListener() {
                                                 @Override
-                                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                                public void onDataChange(final DataSnapshot dataSnapshot) {
                                                     if (dataSnapshot.child("username").exists()) {
                                                         Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
-
                                                         LoginActivity.this.startActivity(myIntent);
+                                                        enableUI();
+                                                        handleFacebookAccessToken(credential);
                                                     } else {
+                                                        enableUI();
                                                         AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this);
                                                         final EditText edittext = new EditText(LoginActivity.this);
-                                                        alert.setMessage("The username cannot start or end with -, _, . or a number, can contain no white spaces, emojis, or special characters, must be 3-15 characters long and all in lowercase.");
+                                                        alert.setMessage("The username cannot start or end with -, _, . or a number, can contain no white spaces, or special characters, must be 3-15 characters long and all in lowercase.");
                                                         alert.setTitle("Create a username");
                                                         alert.setView(edittext);
 
                                                         alert.setPositiveButton("Create", new DialogInterface.OnClickListener() {
                                                             public void onClick(DialogInterface dialog, int whichButton) {
                                                                 //What ever you want to do with the value
-                                                                Editable YouEditTextValue = edittext.getText();
+                                                                final Editable usernameText = edittext.getText();
+
+                                                                boolean loginFailed = false;
+
+                                                                if (usernameText.toString().startsWith("-") || usernameText.toString().startsWith("_") || usernameText.toString().startsWith("_")) {
+                                                                    Toast.makeText(LoginActivity.this, "Login failed. The username must not start with -, _, or .",
+                                                                            Toast.LENGTH_SHORT).show();
+                                                                    loginFailed = true;
+                                                                }
+
+                                                                if (usernameText.toString().endsWith("-") || usernameText.toString().endsWith("_") || usernameText.toString().endsWith("_")) {
+                                                                    Toast.makeText(LoginActivity.this, "Login failed. The username must not end with -, _, or .",
+                                                                            Toast.LENGTH_SHORT).show();
+                                                                    loginFailed = true;
+                                                                }
+
+                                                                if (usernameText.toString().length() < 3 || usernameText.toString().length() > 15) {
+                                                                    Toast.makeText(LoginActivity.this, "Login failed. The username must be between 3 and 15 characters",
+                                                                            Toast.LENGTH_SHORT).show();
+                                                                    loginFailed = true;
+                                                                }
+
+                                                                Pattern pattern = Pattern.compile("\\s");
+                                                                Matcher matcher = pattern.matcher(usernameText.toString());
+                                                                boolean isWhitespace = matcher.find();
+
+                                                                if (isWhitespace) {
+                                                                    Toast.makeText(LoginActivity.this, "Login failed. The username must contain no whitespace.",
+                                                                            Toast.LENGTH_SHORT).show();
+                                                                    loginFailed = true;
+                                                                }
+
+                                                                if (!usernameText.toString().equals(usernameText.toString().toLowerCase())) {
+                                                                    Toast.makeText(LoginActivity.this, "Login failed. The username must be in all lower case.",
+                                                                            Toast.LENGTH_SHORT).show();
+                                                                    loginFailed = true;
+                                                                }
+
+
+                                                                if (loginFailed) {
+                                                                    LoginManager.getInstance().logOut();
+                                                                    mAuth.signOut();
+                                                                    return;
+                                                                }
+
+                                                                // Check if username is unique
+                                                                final DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+                                                                ref.child("users").orderByChild("username").equalTo(usernameText.toString()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                    @Override
+                                                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                        // Username is unique
+                                                                        if (dataSnapshot.getValue() == null) {
+                                                                            handleFacebookAccessToken(credential);
+                                                                            String key = mAuth.getCurrentUser().getUid();
+                                                                            ref.child("users/" + key + "/username").setValue(usernameText.toString());
+                                                                            ref.child("users/" + key + "/id").setValue(key);
+
+                                                                            // Even a user's provider-specific profile information
+                                                                            // only reveals basic information
+                                                                            for (UserInfo profile : mAuth.getCurrentUser().getProviderData()) {
+                                                                                // Id of the provider (ex: google.com)
+                                                                                // Name, email address, and profile photo Url
+                                                                                String profileDisplayName = profile.getDisplayName();
+                                                                                String profileEmail = profile.getEmail();
+                                                                                String profilePhotoUrl = profile.getPhotoUrl().toString();
+
+                                                                                if (profileDisplayName != null && !profileDisplayName.equals("")) {
+                                                                                    ref.child("users/" + key + "/name").setValue(profileDisplayName);
+                                                                                }
+
+                                                                                if (profileEmail != null && !profileEmail.equals("")) {
+                                                                                    ref.child("users/" + key + "/email").setValue(profileEmail);
+                                                                                }
+
+                                                                                if (profilePhotoUrl != null && !profilePhotoUrl.equals("")) {
+                                                                                    ref.child("users/" + key + "/profile").setValue(profilePhotoUrl);
+                                                                                }
+
+                                                                            }
+
+                                                                            Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
+                                                                            LoginActivity.this.startActivity(myIntent);
+                                                                            LoginActivity.this.finish();
+                                                                        } else {
+                                                                            Toast.makeText(LoginActivity.this, "The username is not unique. Please try again with another username.",
+                                                                                    Toast.LENGTH_SHORT).show();
+                                                                            LoginManager.getInstance().logOut();
+                                                                            mAuth.signOut();
+
+                                                                        }
+                                                                    }
+
+                                                                    @Override
+                                                                    public void onCancelled(DatabaseError databaseError) {
+
+                                                                    }
+                                                                });
+
+
 
                                                             }
                                                         });
 
-                                                        alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                                        alert.setNegativeButton("Maybe later", new DialogInterface.OnClickListener() {
                                                             public void onClick(DialogInterface dialog, int whichButton) {
                                                                 // what ever you want to do with No option.
                                                                 LoginManager.getInstance().logOut();
@@ -187,6 +295,15 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        // Check if user is logged in through FB
+        if (isLoggedIn()) {
+            final AuthCredential credential = FacebookAuthProvider.getCredential(AccessToken.getCurrentAccessToken().getToken());
+            Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
+            LoginActivity.this.startActivity(myIntent);
+            LoginActivity.this.finish();
+            return;
+
+        }
         signInButton = (Button) findViewById(R.id.signInButton);
         final EditText email = (EditText) findViewById(R.id.email);
         final EditText password = (EditText) findViewById(R.id.password);
@@ -390,5 +507,30 @@ public class LoginActivity extends AppCompatActivity {
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         return accessToken != null;
     }
+
+
+    private void handleFacebookAccessToken(AuthCredential credential) {
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithCredential:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            enableUI();
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+                            Toast.makeText(LoginActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                            enableUI();
+                        }
+
+                        // ...
+                    }
+                });
+    }
+
 
 }
