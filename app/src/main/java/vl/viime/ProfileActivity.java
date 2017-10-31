@@ -242,7 +242,7 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 // If clicking out of name field, and not into age or email, then hide keyboard
-                if (!hasFocus && !mAgeEditText.hasFocus() && !mEmailEditText.hasFocus()) {
+                if (!hasFocus ||  mEmailEditText.hasFocus()) {
                     hideKeyboard(v);
                     String userId = mUser.getUid().toString();
                     // If name has changed, then update it in Firebase
@@ -258,30 +258,11 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
 
-        mAgeEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                // If clicking out of age field, and not into name or email, then hide keyboard
-                if (!hasFocus && !mNameEditText.hasFocus() && !mEmailEditText.hasFocus()) {
-                    hideKeyboard(v);
-                    String userId = mUser.getUid().toString();
-                    // If age has changed, then update it in Firebase
-                    if (mUser != null && !userId.equals("") && !mAgeEditText.getText().toString().equals(mAge)) {
-                        DatabaseReference ref = mDatabase.child("users/" + userId + "/age");
-                        ref.setValue(mAgeEditText.getText().toString());
-                        mAge = mAgeEditText.getText().toString();
-                        Toast.makeText(ProfileActivity.this, R.string.age_updated,
-                                Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        });
-
         mEmailEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 // If clicking out of email field, and not into name or age, then hide keyboard
-                if (!hasFocus && !mNameEditText.hasFocus() && !mAgeEditText.hasFocus()) {
+                if (!hasFocus || mNameEditText.hasFocus()) {
                     hideKeyboard(v);
                     String userId = mUser.getUid().toString();
                     // If email has changed, then update it in Firebase
@@ -433,6 +414,15 @@ public class ProfileActivity extends AppCompatActivity {
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
         mAgeEditText.setText(sdf.format(myCalendar.getTime()));
+
+        if (mUser != null && !mUser.getUid().equals("") && !mAgeEditText.getText().toString().equals(mAge)) {
+            DatabaseReference ref = mDatabase.child("users/" + mUser.getUid() + "/age");
+            ref.setValue(mAgeEditText.getText().toString());
+            mAge = mAgeEditText.getText().toString();
+            Toast.makeText(ProfileActivity.this, R.string.age_updated,
+                    Toast.LENGTH_SHORT).show();
+        }
+
     }
 
 
