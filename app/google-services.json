@@ -40,15 +40,15 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
+              "client_id": "820398914688-fs1rvhk6rg7df0ls037290hm852svbt4.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
               "client_id": "820398914688-rpti8d5o81i4jlsbu4giach5f23ufgrd.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
                 "bundle_id": "vl.ViiMe"
               }
-            },
-            {
-              "client_id": "820398914688-fs1rvhk6rg7df0ls037290hm852svbt4.apps.googleusercontent.com",
-              "client_type": 3
             }
           ]
         },

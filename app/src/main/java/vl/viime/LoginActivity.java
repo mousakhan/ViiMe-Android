@@ -50,6 +50,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.crashlytics.android.Crashlytics;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.zxing.common.StringUtils;
 
 import java.util.regex.Matcher;
@@ -105,6 +107,9 @@ public class LoginActivity extends AppCompatActivity {
         // Setup Fabric
         Fabric.with(this, new Crashlytics());
 
+        // Set a topic that we can send notifications too
+        FirebaseMessaging.getInstance().subscribeToTopic("android");
+
         getSupportActionBar().hide();
 
         callbackManager = CallbackManager.Factory.create();
@@ -130,6 +135,7 @@ public class LoginActivity extends AppCompatActivity {
                                                         LoginActivity.this.startActivity(myIntent);
                                                         enableUI();
                                                         handleFacebookAccessToken(credential);
+                                                        Log.d(TAG, FirebaseInstanceId.getInstance().getToken());
                                                     } else {
                                                         enableUI();
                                                         AlertDialog.Builder alert = new AlertDialog.Builder(LoginActivity.this);
@@ -224,6 +230,7 @@ public class LoginActivity extends AppCompatActivity {
                                                                             Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
                                                                             LoginActivity.this.startActivity(myIntent);
                                                                             LoginActivity.this.finish();
+                                                                            Log.d(TAG, FirebaseInstanceId.getInstance().getToken());
                                                                         } else {
                                                                             Toast.makeText(LoginActivity.this, "The username is not unique. Please try again with another username.",
                                                                                     Toast.LENGTH_SHORT).show();
@@ -280,7 +287,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onError(FacebookException exception) {
                         // Let them know there's an error
-                        Toast.makeText(LoginActivity.this, R.string.facebook_error,
+                        Toast.makeText(LoginActivity.this, R.string.facebook_error + exception.getLocalizedMessage(),
                                 Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -292,6 +299,7 @@ public class LoginActivity extends AppCompatActivity {
             Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
             LoginActivity.this.startActivity(myIntent);
             LoginActivity.this.finish();
+            Log.d(TAG, FirebaseInstanceId.getInstance().getToken());
             return;
         }
 
@@ -301,6 +309,7 @@ public class LoginActivity extends AppCompatActivity {
             Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
             LoginActivity.this.startActivity(myIntent);
             LoginActivity.this.finish();
+            Log.d(TAG, FirebaseInstanceId.getInstance().getToken());
             return;
 
         }
@@ -495,6 +504,7 @@ public class LoginActivity extends AppCompatActivity {
                             Intent myIntent = new Intent(LoginActivity.this, HomeActivity.class);
                             LoginActivity.this.startActivity(myIntent);
                             LoginActivity.this.finish();
+                            Log.d(TAG, FirebaseInstanceId.getInstance().getToken());
                         }
 
                         enableUI();

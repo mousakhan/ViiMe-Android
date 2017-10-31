@@ -121,6 +121,8 @@ public class RedemptionActivity extends AppCompatActivity {
         System.out.println(user.getUid());
         DatabaseReference ref = mDatabase.child("users/" + user.getUid());
         final User currentUser = new User();
+        currentUser.username = "";
+        currentUser.profile = "";
         // Attach a listener to read the data at the users node
 
         // Create adapter passing in the sample user data
@@ -133,11 +135,14 @@ public class RedemptionActivity extends AppCompatActivity {
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                currentUser.username = (String) dataSnapshot.child("username").getValue().toString();
+                if (currentUser != null) {
+                    if (dataSnapshot.child("username").getValue() != null) {
+                        currentUser.username = (String) dataSnapshot.child("username").getValue().toString();
+                    }
 
-                currentUser.profile = (String) dataSnapshot.child("profile").getValue().toString();
-                if (currentUser.profile == null) {
-                    currentUser.profile = "";
+                    if (dataSnapshot.child("profile").getValue() != null) {
+                        currentUser.profile = (String) dataSnapshot.child("profile").getValue().toString();
+                    }
                 }
 
                 users.add(currentUser);
